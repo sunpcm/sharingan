@@ -1,0 +1,54 @@
+.main {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 90%;
+  width: 90%;
+  /* margin: 2% 5%; */
+  border: green 2px solid;
+}
+
+.main .mouse{
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 40px;
+  width: 40px;
+  background-color: red;
+}
+
+.main .mouse.m-1{
+  background-color: greenyellow;
+}
+
+.main .top-panel {
+  width: 100%;
+  height: 40px;
+  border: red 1px solid;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.main .left-panel {
+  height: 80%;
+  width: 40px;
+  border: red 1px solid;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  ;
+}
+
+.main .bottom-panel {
+  width: 100%;
+  height: 40px;
+  border: red 1px solid;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.main .right-panel {
+  display: none;
+}
