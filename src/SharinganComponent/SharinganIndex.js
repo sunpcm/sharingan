@@ -40,11 +40,9 @@ class Sharingan extends React.Component {
         i = i ? i : 0
         if (actionRecord.length == 0) return;
         document.querySelector(actionRecord[i].target.join(' ')).parentNode.children[actionRecord[i].index].click()
-        // document.getElementsByClassName('m-1')[0].style.top = window.actionRecord[i].position.y + 'px'
-        // document.getElementsByClassName('m-1')[0].style.left = window.actionRecord[i].position.x + 'px'
         this.setState({
             dialogInfo: {
-                step: i + 1,
+                // step: i + 1,
                 x: actionRecord[i].position.x + 'px',
                 y: actionRecord[i].position.y + 'px'
             }
@@ -57,7 +55,6 @@ class Sharingan extends React.Component {
     taskList() {
         this.props.taskList()
     }
-
 
 
     // getElementTop(element) {

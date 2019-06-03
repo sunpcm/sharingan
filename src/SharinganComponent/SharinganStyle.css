@@ -46,8 +46,11 @@
   border-radius: 10px;
 }
 
-#dialog-panel #dialog-panel-btn .dialog-panel-top .dialog-panel-steps {
+#dialog-panel #dialog-panel-btn .dialog-panel-top .dialog-panel-status.gray-pointer {
+  background-color: gray;
 }
+
+#dialog-panel #dialog-panel-btn .dialog-panel-top .dialog-panel-steps {}
 
 #dialog-panel #dialog-panel-btn .dialog-panel-bottom {
   height: 34px;

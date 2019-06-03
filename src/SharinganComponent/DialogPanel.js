@@ -5,14 +5,9 @@ class DialogPanel extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            isRecord: false
         }
     }
-
-    // componentWillUnmount = () => {
-    //     this.setState = (state, callback) => {
-    //         return;
-    //     };
-    // }
 
     componentWillReceiveProps(nextProps) {
         if (this.props.status != nextProps.status) {
@@ -20,23 +15,19 @@ class DialogPanel extends Component {
         }
     }
 
-    // taskRun(i) {
-    //     i = i ? i : 0
-    //     if (this.props.actionRecord.length == 0) return;
-    //     document.querySelector(this.props.actionRecord[i].target.join(' ')).parentNode.children[this.props.actionRecord[i].index].click()
-    //     // document.getElementById('dialog-panel').style.top = window.this.props.actionRecord[i].position.y + 'px'
-    //     // document.getElementById('dialog-panel').style.left = window.this.props.actionRecord[i].position.x + 'px'
-    //     // this.setState({
-    //     //     dialogInfo: {
-    //     //         step: i + 1,
-    //     //         x: this.props.actionRecord[i].position.y + 'px',
-    //     //         y: this.props.actionRecord[i].position.x + 'px'
-    //     //     }
-    //     // })
-    //     if (this.props.actionRecord[i + 1]) {
-    //         this.timeCircle = setTimeout(() => this.taskRun(i + 1), this.props.actionRecord[i].during)
-    //     }
-    // }
+    startSharingan() {
+        this.props.startSharingan()
+        this.setState({
+            isRecord: true
+        })
+    }
+
+    runSharingan() {
+        this.props.runSharingan()
+        this.setState({
+            isRecord: false
+        })
+    }
 
     render() {
         return (
@@ -44,12 +35,12 @@ class DialogPanel extends Component {
                 <div id="dialog-panel-pointer" style={{ left: this.props.dialogInfo.x, top: this.props.dialogInfo.y }}></div>
                 <div id="dialog-panel-btn">
                     <div className="dialog-panel-top">
-                        <div className="dialog-panel-status"></div>
-                        <div className="dialog-panel-steps">40</div>
+                        <div className={`dialog-panel-status ${this.state.isRecord ? 'animated infinite flash slow' : 'gray-pointer'}`}></div>
+                        <div className="dialog-panel-steps">{this.props.step}</div>
                     </div>
                     <div className="dialog-panel-bottom">
-                        <div className="start-sharingan" onClick={() => this.props.startSharingan()}>start</div>
-                        <div className="run-sharingan" onClick={() => this.props.runSharingan()}>run</div>
+                        <div className="start-sharingan" onClick={() => this.startSharingan()}>start</div>
+                        <div className="run-sharingan" onClick={() => this.runSharingan()}>run</div>
                     </div>
 
                 </div>
