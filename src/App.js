@@ -1,5 +1,6 @@
 import React from 'react';
 import Sharingan from './SharinganComponent/SharinganIndex'
+// import DialogPanel from './SharinganComponent/DialogPanel'
 import './App.css';
 
 window.actionRecord = []
@@ -11,12 +12,12 @@ class App extends React.Component {
     this.Sharingan = new Sharingan()
   }
 
-  componentDidMount() {
-    this.Sharingan.startSharingan()
-  }
+  // componentDidMount() {
+  //   this.Sharingan.startSharingan()
+  // }
 
   taskList() {
-    this.Sharingan.taskRun()
+    // this.Sharingan.taskRun()
   }
 
   test(data) {
@@ -27,6 +28,7 @@ class App extends React.Component {
   render() {
     return (
       <div className="main">
+        <Sharingan />
         <div className="mouse m-1"></div>
         <div className="mouse m-2"></div>
         <div className="mouse m-3"></div>

@@ -8,19 +8,6 @@
   border: green 2px solid;
 }
 
-.main .mouse{
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 40px;
-  width: 40px;
-  background-color: red;
-}
-
-.main .mouse.m-1{
-  background-color: greenyellow;
-}
-
 .main .top-panel {
   width: 100%;
   height: 40px;

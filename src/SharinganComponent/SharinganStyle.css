@@ -1,0 +1,166 @@
+#dialog-panel {
+  pointer-events: none;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  border-radius: 5px;
+}
+
+#dialog-panel #dialog-panel-pointer {
+  background-color: red;
+  height: 40px;
+  width: 40px;
+  border-radius: 20px;
+  position: absolute;
+  top: 200px;
+  left: 500px;
+}
+
+#dialog-panel #dialog-panel-btn {
+  position: absolute;
+  top: 200px;
+  left: 500px;
+  pointer-events: auto;
+  width: 120px;
+  /* height: 100px; */
+}
+
+#dialog-panel #dialog-panel-btn .dialog-panel-top {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  background-color: #e8e8e8;
+  height: 44px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  /* column-content:center */
+  align-items: center;
+
+}
+
+#dialog-panel #dialog-panel-btn .dialog-panel-top .dialog-panel-status {
+  background-color: red;
+  height: 20px;
+  width: 20px;
+  border-radius: 10px;
+}
+
+#dialog-panel #dialog-panel-btn .dialog-panel-top .dialog-panel-steps {
+}
+
+#dialog-panel #dialog-panel-btn .dialog-panel-bottom {
+  height: 34px;
+  display: flex;
+  flex-direction: row;
+}
+
+#dialog-panel #dialog-panel-btn .dialog-panel-bottom .start-sharingan {
+  border-right: 1px solid #ddd;
+}
+
+#dialog-panel #dialog-panel-btn .dialog-panel-bottom .start-sharingan,
+#dialog-panel #dialog-panel-btn .dialog-panel-bottom .run-sharingan {
+  width: 60px;
+  padding: 4px 6px;
+  line-height: 28px;
+  text-align: center;
+  cursor: pointer;
+}
+
+#dialog-panel #dialog-panel-btn .dialog-panel-bottom .start-sharingan {
+  border-bottom-left-radius: 4px;
+  background-color: #e8e8e8;
+}
+
+#dialog-panel #dialog-panel-btn .dialog-panel-bottom .run-sharingan {
+  border-bottom-right-radius: 4px;
+  background-color: #e8e8e8;
+}
+
+
+#dialog-panel #dialog-panel-btn .start-sharingan:hover,
+#dialog-panel #dialog-panel-btn .run-sharingan:hover {
+  background: #eee
+}
+
+#dialog-panel .sharingan-popover {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+  font-variant: tabular-nums;
+  line-height: 1.5;
+  list-style: none;
+  -webkit-font-feature-settings: 'tnum';
+  font-feature-settings: 'tnum';
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1030;
+  font-weight: normal;
+  white-space: normal;
+  text-align: left;
+  cursor: auto;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text
+}
+
+#dialog-panel .sharingan-popover::after {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.01);
+  content: ''
+}
+
+#dialog-panel .sharingan-popover-inner {
+  background-color: #fff;
+  background-clip: padding-box;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.15) \9;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.15) \9
+}
+
+#dialog-panel .sharingan-popover-title {
+  min-width: 177px;
+  min-height: 32px;
+  margin: 0;
+  padding: 5px 16px 4px;
+  color: rgba(0, 0, 0, 0.85);
+  font-weight: 500;
+  border-bottom: 1px solid #e8e8e8
+}
+
+
+#dialog-panel .sharingan-popover-inner-content {
+  padding: 12px 16px;
+  color: rgba(0, 0, 0, 0.65)
+}
+
+
+#dialog-panel .sharingan-popover-arrow {
+  position: absolute;
+  display: block;
+  width: 8.48528137px;
+  height: 8.48528137px;
+  background: transparent;
+  border-style: solid;
+  border-width: 4.24264069px;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+
+  bottom: -2px;
+  left: 12px;
+  border-top-color: transparent;
+  border-right-color: #fff;
+  border-bottom-color: #fff;
+  border-left-color: transparent;
+  -webkit-box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.07);
+  box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.07);
+}
