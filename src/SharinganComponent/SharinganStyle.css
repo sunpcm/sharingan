@@ -7,13 +7,13 @@
 }
 
 #dialog-panel #dialog-panel-pointer {
-  background-color: red;
   height: 40px;
   width: 40px;
-  border-radius: 20px;
   position: absolute;
   top: 200px;
   left: 500px;
+  background-image: url('./imgs/mouse-left.svg');
+  background-size: 100%;
 }
 
 #dialog-panel #dialog-panel-btn {
@@ -36,6 +36,7 @@
   justify-content: space-around;
   /* column-content:center */
   align-items: center;
+  cursor: move;
 
 }
 
@@ -50,12 +51,18 @@
   background-color: gray;
 }
 
-#dialog-panel #dialog-panel-btn .dialog-panel-top .dialog-panel-steps {}
+/* #dialog-panel #dialog-panel-btn .dialog-panel-top .dialog-panel-steps {
+
+} */
 
 #dialog-panel #dialog-panel-btn .dialog-panel-bottom {
   height: 34px;
   display: flex;
   flex-direction: row;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 #dialog-panel #dialog-panel-btn .dialog-panel-bottom .start-sharingan {
@@ -100,8 +107,8 @@
   -webkit-font-feature-settings: 'tnum';
   font-feature-settings: 'tnum';
   position: absolute;
-  top: 0;
-  left: 0;
+  top: -40px;
+  left: 40px;
   z-index: 1030;
   font-weight: normal;
   white-space: normal;

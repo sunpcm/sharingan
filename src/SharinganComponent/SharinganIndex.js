@@ -20,7 +20,8 @@ class Sharingan extends React.Component {
                 lastAction.during = dataTime - lastAction.startTime
             }
             let target = e.path.reverse().slice(4).map(n => n.id ? `#${n.id}` : (n.className ? `.${n.className.replace(' ', '.')}` : `#${n.tagName}`))
-            if (!target || target.length == 0 || e.path[0].className == "run-sharingan") {
+
+            if (!target || target.length == 0 || target.includes('#dialog-panel')) {
                 return
             }
             let index = [...document.querySelector(target.join(' ')).parentNode.children].indexOf(e.path[0])
