@@ -127,6 +127,8 @@
 }
 
 #dialog-panel .sharingan-popover-inner {
+  word-wrap: break-word;
+  width: 240px;
   background-color: #fff;
   background-clip: padding-box;
   border-radius: 4px;

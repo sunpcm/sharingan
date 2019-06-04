@@ -12,6 +12,10 @@ class Sharingan extends React.Component {
         }
     }
 
+    componentWillUnmount() {
+        window.onmousedown = null
+    }
+
     startSharingan() {
         window.onmousedown = (e) => {
             let dataTime = new Date().getTime()
@@ -44,8 +48,8 @@ class Sharingan extends React.Component {
         this.setState({
             dialogInfo: {
                 // step: i + 1,
-                x: actionRecord[i].position.x + 'px',
-                y: actionRecord[i].position.y + 'px'
+                x: actionRecord[i].position.x,
+                y: actionRecord[i].position.y
             }
         })
         if (actionRecord[i + 1]) {

@@ -95,10 +95,18 @@ class DialogPanel extends Component {
 
 
     render() {
+        // this.props.dialogInfo.x / ocument.documentElement.clientHeight
+        // document.documentElement.clientWidth
+
+        let panelPosition = {
+            x: this.props.dialogInfo.x / document.documentElement.clientWidth > 0.5 ? '-240' : '40',
+            y: this.props.dialogInfo.y / document.documentElement.clientHeight > 0.5 ? '-80' : '0'
+        }
+
         return (
             <div id="dialog-panel">
-                <div id="dialog-panel-pointer" style={{ left: this.props.dialogInfo.x, top: this.props.dialogInfo.y }}>
-                    <div className="sharingan-popover sharingan-popover-placement-top">
+                <div id="dialog-panel-pointer" style={{ left: this.props.dialogInfo.x + 'px', top: this.props.dialogInfo.y + 'px' }}>
+                    <div className="sharingan-popover sharingan-popover-placement-top" style={{ left: panelPosition.x + 'px', top: panelPosition.y + 'px' }}>
                         <div className="sharingan-popover-content">
                             {/* <div className="sharingan-popover-arrow"></div> */}
                             <div className="sharingan-popover-inner" role="tooltip">
@@ -106,8 +114,7 @@ class DialogPanel extends Component {
                                     <div className="sharingan-popover-title">Title</div>
                                     <div className="sharingan-popover-inner-content">
                                         <div>
-                                            <p>Content</p>
-                                            <p>Content</p>
+                                            Content,Content,Content,Content,Content,Content,Content,Content
                                         </div>
                                     </div>
                                 </div>

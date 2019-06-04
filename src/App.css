@@ -5,13 +5,13 @@
   height: 90%;
   width: 90%;
   /* margin: 2% 5%; */
-  border: green 2px solid;
+  /* border: green 2px solid; */
 }
 
 .main .top-panel {
   width: 100%;
   height: 40px;
-  border: red 1px solid;
+  /* border: red 1px solid; */
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -20,7 +20,7 @@
 .main .left-panel {
   height: 80%;
   width: 40px;
-  border: red 1px solid;
+  /* border: red 1px solid; */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -30,7 +30,7 @@
 .main .bottom-panel {
   width: 100%;
   height: 40px;
-  border: red 1px solid;
+  /* border: red 1px solid; */
   display: flex;
   flex-direction: row;
   justify-content: space-between;
