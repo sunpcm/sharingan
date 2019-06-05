@@ -7,14 +7,18 @@ window.actionRecord = []
 
 class App extends React.Component {
 
-  constructor(props) {
-    super(props)
-    this.Sharingan = new Sharingan()
+  // constructor(props) {
+  //   super(props)
+  // }
+
+  componentDidMount() {
+    //   this.Sharingan.startSharingan()
+    // this.Sharingan = new Sharingan({callback:()=>this.test()})
   }
 
-  // componentDidMount() {
-  //   this.Sharingan.startSharingan()
-  // }
+  test(e) {
+    console.log(e)
+  }
 
   taskList() {
     // this.Sharingan.taskRun()
@@ -28,7 +32,7 @@ class App extends React.Component {
   render() {
     return (
       <div className="main">
-        <Sharingan />
+        <Sharingan test={(e) => this.text(e)} />
         <div className="mouse m-1"></div>
         <div className="mouse m-2"></div>
         <div className="mouse m-3"></div>
