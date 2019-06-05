@@ -32,7 +32,7 @@ class App extends React.Component {
   render() {
     return (
       <div className="main">
-        <Sharingan test={(e) => this.text(e)} />
+        <Sharingan defaultTarget={'.main'} />
         <div className="mouse m-1"></div>
         <div className="mouse m-2"></div>
         <div className="mouse m-3"></div>
