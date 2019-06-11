@@ -10,7 +10,7 @@ class DialogPanel extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.status != nextProps.status) {
+        if (this.props.status !== nextProps.status) {
             this.taskRun()
         }
     }
@@ -46,7 +46,7 @@ class DialogPanel extends Component {
             switch (e.type) {
                 case 'mousedown':
                     draggingObj = validateHandler(e);
-                    if (draggingObj != null) {
+                    if (draggingObj !== null) {
                         diffX = e.clientX - draggingObj.offsetLeft;
                         diffY = e.clientY - draggingObj.offsetTop;
                     }
@@ -83,10 +83,10 @@ class DialogPanel extends Component {
 
     getDraggingDialog(e) {
         let target = e.target;
-        while (target && target.className.indexOf('dialog-panel-top') == -1) {
+        while (target && target.className.indexOf('dialog-panel-top') === -1) {
             target = target.offsetParent;
         }
-        if (target != null) {
+        if (target !== null) {
             return target.offsetParent;
         } else {
             return null;
