@@ -39,7 +39,7 @@ class Sharingan extends React.Component {
                 let lastAction = actionRecord[actionRecord.length - 1]
                 lastAction.during = dataTime - lastAction.startTime
             }
-            let target = e.path.reverse().slice(4).map(n => n.id ? `#${n.id}` : (n.className ? `.${n.className.replace(' ', '.')}` : `${n.tagName}`))
+            let target = e.path.reverse().slice(4).map(n => n.id ? `#${n.id}` : (n.className ? `.${n.className.replace(/^\s+|\s+$/g,"").replace(/\s+/g,".")}` : `${n.tagName}`))
             if (target.includes('#dialog-panel')) {
                 return
             }
@@ -138,7 +138,7 @@ class Sharingan extends React.Component {
         if (actionRecord.length === 0) return;
 
         let targetRecord = actionRecord[i]
-        let targetEle = (targetRecord.target.length > 0 && document.querySelector(targetRecord.target.join(' ')).parentNode.children[targetRecord.index]) || document.querySelector(this.props.defaultTarget)
+        let targetEle = targetRecord.target.length > 0 ? document.querySelector(targetRecord.target.join(' ')).parentNode.children[targetRecord.index] : document.querySelector(this.props.defaultTarget)
 
         switch (targetRecord.type) {
             case 'click':

@@ -5,7 +5,7 @@ class DialogPanel extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            isRecord: false
+            recordStatus: ''
         }
     }
 
@@ -26,14 +26,14 @@ class DialogPanel extends Component {
     startSharingan() {
         this.props.startSharingan()
         this.setState({
-            isRecord: true
+            recordStatus: 'record'
         })
     }
 
     runSharingan() {
         this.props.runSharingan()
         this.setState({
-            isRecord: false
+            recordStatus: 'run'
         })
     }
 
