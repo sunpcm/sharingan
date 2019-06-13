@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import './SharinganStyle.css'
+import './RecordReplayStyle.css'
 
 class DialogPanel extends Component {
     constructor(props) {
@@ -23,7 +23,7 @@ class DialogPanel extends Component {
                 // e.target.parentNode.parentNode.id
             }
             if (e.target && e.target.className == "icon-run") {
-                this.runSharingan(e.target.parentNode.parentNode.id)
+                this.runRecordReplay(e.target.parentNode.parentNode.id)
             }
         });
         this.Dragging(this.getDraggingDialog).enable();
@@ -35,28 +35,28 @@ class DialogPanel extends Component {
 
 
 
-    handleSharingan() {
+    handleRecordReplay() {
         if (this.state.recordStatus == 'record') {
-            this.props.pauseSharingan()
+            this.props.pauseRecordReplay()
             this.setState({
                 recordStatus: 'pause'
             })
         } else {
-            this.props.startSharingan()
+            this.props.startRecordReplay()
             this.setState({
                 recordStatus: 'record'
             })
         }
     }
-    clearSharingan() {
-        this.props.clearSharingan()
+    clearRecordReplay() {
+        this.props.clearRecordReplay()
     }
-    saveSharingan() {
-        this.props.saveSharingan()
+    saveRecordReplay() {
+        this.props.saveRecordReplay()
     }
 
-    runSharingan(index) {
-        this.props.runSharingan(index)
+    runRecordReplay(index) {
+        this.props.runRecordReplay(index)
         this.setState({
             recordStatus: 'run'
         })
@@ -264,7 +264,7 @@ class DialogPanel extends Component {
                     <div className="dialog-panel-top">
                         <ul className="record-list">
                             {
-                                this.props.listSharingan.map((n, i) => {
+                                this.props.listRecordReplay.map((n, i) => {
                                     return (
                                         <li className="record-item" key={i} id={i}>
                                             <span className="record-date">{this.formateDate(n.time)}</span>
@@ -285,9 +285,9 @@ class DialogPanel extends Component {
                         </ul>
                     </div>
                     <div className="dialog-panel-bottom">
-                        <div className="clear-btn dialog-btn" onClick={() => this.clearSharingan()}>Clear</div>
-                        <div className="status-btn dialog-btn" onClick={() => this.handleSharingan()} > <div className={`point-status ${this.state.recordStatus == 'record' ? 'animated infinite flash slow' : 'gray-pointer'}`}></div></div>
-                        <div className="save-btn dialog-btn" onClick={() => this.saveSharingan()}>Save</div>
+                        <div className="clear-btn dialog-btn" onClick={() => this.clearRecordReplay()}>Clear</div>
+                        <div className="status-btn dialog-btn" onClick={() => this.handleRecordReplay()} > <div className={`point-status ${this.state.recordStatus == 'record' ? 'animated infinite flash slow' : 'gray-pointer'}`}></div></div>
+                        <div className="save-btn dialog-btn" onClick={() => this.saveRecordReplay()}>Save</div>
                     </div>
                 </div>
             </div >

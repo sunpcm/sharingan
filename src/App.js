@@ -1,6 +1,6 @@
 import React from 'react';
-import Sharingan from './SharinganComponent/SharinganIndex'
-// import DialogPanel from './SharinganComponent/DialogPanel'
+import RecordReplay from './RecordReplayComponent/RecordReplayIndex'
+// import DialogPanel from './RecordReplayComponent/DialogPanel'
 import './App.css';
 
 window.actionRecord = []
@@ -12,8 +12,8 @@ class App extends React.Component {
   // }
 
   componentDidMount() {
-    //   this.Sharingan.startSharingan()
-    // this.Sharingan = new Sharingan({callback:()=>this.test()})
+    //   this.RecordReplay.startRecordReplay()
+    // this.RecordReplay = new RecordReplay({callback:()=>this.test()})
   }
 
   test(e) {
@@ -21,7 +21,7 @@ class App extends React.Component {
   }
 
   taskList() {
-    // this.Sharingan.taskRun()
+    // this.RecordReplay.taskRun()
   }
 
   test(data) {
@@ -88,7 +88,7 @@ class App extends React.Component {
   render() {
     return (
       <div className="main">
-        <Sharingan defaultTarget={'.main'} />
+        <RecordReplay defaultTarget={'.main'} />
         <div className="mouse m-1"></div>
         <div className="mouse m-2"></div>
         <div className="mouse m-3"></div>

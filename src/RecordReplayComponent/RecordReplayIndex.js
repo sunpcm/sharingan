@@ -3,7 +3,7 @@ import DialogPanel from './DialogPanel';
 import _ from 'lodash'
 
 let actionRecord = []
-class Sharingan extends React.Component {
+class RecordReplay extends React.Component {
 
     constructor(props) {
         super(props)
@@ -19,7 +19,7 @@ class Sharingan extends React.Component {
         window.onmousemove = null
     }
     componentDidMount() {
-        this.getSharingan()
+        this.getRecordReplay()
     }
     getPosition(e) {
         e = e || window.event;
@@ -30,7 +30,7 @@ class Sharingan extends React.Component {
         return { x: x, y: y }
     }
 
-    saveSharingan() {
+    saveRecordReplay() {
         if (actionRecord.length == 0) return
         try {
             let actionStore = localStorage.getItem('actionStore')
@@ -46,7 +46,7 @@ class Sharingan extends React.Component {
                 id: new Date().getTime()
             })
             localStorage.setItem('actionStore', JSON.stringify(actionStore));
-            this.getSharingan()
+            this.getRecordReplay()
             actionRecord = []
         } catch (oException) {
             if (oException.name == 'QuotaExceededError') {
@@ -54,21 +54,21 @@ class Sharingan extends React.Component {
             }
         }
     }
-    getSharingan() {
+    getRecordReplay() {
         this.setState({
-            listSharingan: JSON.parse(localStorage.getItem('actionStore') || '[]')
+            listRecordReplay: JSON.parse(localStorage.getItem('actionStore') || '[]').sort((m, n) => n.time - m.time)
         })
     }
-    clearSharingan() {
+    clearRecordReplay() {
         actionRecord = [];
-        this.pauseSharingan();
+        this.pauseRecordReplay();
     }
-    pauseSharingan() {
+    pauseRecordReplay() {
         window.onmousedown = null;
         window.onmouseup = null;
         window.onmousemove = null;
     }
-    startSharingan() {
+    startRecordReplay() {
         window.onmousedown = (e) => {
             let dataTime = new Date().getTime()
             if (actionRecord.length > 0) {
@@ -162,12 +162,12 @@ class Sharingan extends React.Component {
         }, 50, { 'trailing': true });
     }
 
-    executeSharingan(i, executeRecord) {
-        this.stopSharingan()
+    executeRecordReplay(i, executeRecord) {
+        this.pauseRecordReplay()
         i = i ? i : 0
         if (executeRecord.length === 0) return;
 
-        let targetRecord = executeRecord[i]
+        let targetRecord = executeRecord.list[i]
         let targetEle = targetRecord.target.length > 0 ? document.querySelector(targetRecord.target.join(' ')).parentNode.children[targetRecord.index] : document.querySelector(this.props.defaultTarget)
 
         switch (targetRecord.type) {
@@ -184,8 +184,8 @@ class Sharingan extends React.Component {
                 this.fireMouseEvent('mouseup', targetEle, targetRecord.position.x, targetRecord.position.Y)
                 break;
         }
-        if (executeRecord[i + 1]) {
-            this.timeCircle = setTimeout(() => this.runSharingan(i + 1), targetRecord.during)
+        if (executeRecord.list[i + 1]) {
+            this.timeCircle = setTimeout(() => this.executeRecordReplay(i + 1, executeRecord), targetRecord.during)
         }
         this.setState({
             dialogInfo: {
@@ -195,9 +195,9 @@ class Sharingan extends React.Component {
         })
     }
 
-    runSharingan(index) {
-        if (this.state.listSharingan[index]) {
-            this.executeSharingan(0, this.state.listSharingan[index])
+    runRecordReplay(index) {
+        if (this.state.listRecordReplay[index]) {
+            this.executeRecordReplay(0, this.state.listRecordReplay[index])
         } else {
             console.warn(index + 'record is not exist')
         }
@@ -214,15 +214,15 @@ class Sharingan extends React.Component {
     };
 
     render() {
-        const { step, dialogInfo, listSharingan } = this.state
+        const { step, dialogInfo, listRecordReplay } = this.state
         return (
             < DialogPanel
-                listSharingan={listSharingan || []}
-                saveSharingan={() => this.saveSharingan()}
-                clearSharingan={() => this.clearSharingan()}
-                startSharingan={() => this.startSharingan()}
-                pauseSharingan={() => this.pauseSharingan()}
-                runSharingan={(index) => this.runSharingan(null, index)}
+                listRecordReplay={listRecordReplay || []}
+                saveRecordReplay={() => this.saveRecordReplay()}
+                clearRecordReplay={() => this.clearRecordReplay()}
+                startRecordReplay={() => this.startRecordReplay()}
+                pauseRecordReplay={() => this.pauseRecordReplay()}
+                runRecordReplay={(index) => this.runRecordReplay(index)}
                 dialogInfo={dialogInfo}
                 step={step}
             />
@@ -230,4 +230,4 @@ class Sharingan extends React.Component {
     }
 }
 
-export default Sharingan;
+export default RecordReplay;
