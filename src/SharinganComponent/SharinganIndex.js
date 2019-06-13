@@ -18,6 +18,9 @@ class Sharingan extends React.Component {
         window.onmouseup = null
         window.onmousemove = null
     }
+    componentDidMount() {
+        this.getSharingan()
+    }
     getPosition(e) {
         e = e || window.event;
         let scrollX = document.documentElement.scrollLeft || document.body.scrollLeft;
@@ -27,10 +30,43 @@ class Sharingan extends React.Component {
         return { x: x, y: y }
     }
 
-    stopSharingan() {
-        window.onmousedown = null
-        window.onmouseup = null
-        window.onmousemove = null
+    saveSharingan() {
+        if (actionRecord.length == 0) return
+        try {
+            let actionStore = localStorage.getItem('actionStore')
+            // {[actionRecord[actionRecord.length - 1].startTime]:actionRecord}
+            if (!actionStore) {
+                actionStore = '[]'
+            }
+            actionStore = JSON.parse(actionStore)
+            actionStore.push({
+                time: actionRecord[actionRecord.length - 1].startTime,
+                name: '',
+                list: actionRecord,
+                id: new Date().getTime()
+            })
+            localStorage.setItem('actionStore', JSON.stringify(actionStore));
+            this.getSharingan()
+            actionRecord = []
+        } catch (oException) {
+            if (oException.name == 'QuotaExceededError') {
+                console.log('The local storage limit has been exceeded!');
+            }
+        }
+    }
+    getSharingan() {
+        this.setState({
+            listSharingan: JSON.parse(localStorage.getItem('actionStore') || '[]')
+        })
+    }
+    clearSharingan() {
+        actionRecord = [];
+        this.pauseSharingan();
+    }
+    pauseSharingan() {
+        window.onmousedown = null;
+        window.onmouseup = null;
+        window.onmousemove = null;
     }
     startSharingan() {
         window.onmousedown = (e) => {
@@ -39,7 +75,7 @@ class Sharingan extends React.Component {
                 let lastAction = actionRecord[actionRecord.length - 1]
                 lastAction.during = dataTime - lastAction.startTime
             }
-            let target = e.path.reverse().slice(4).map(n => n.id ? `#${n.id}` : (n.className ? `.${n.className.replace(/^\s+|\s+$/g,"").replace(/\s+/g,".")}` : `${n.tagName}`))
+            let target = e.path.reverse().slice(4).map(n => n.id ? `#${n.id}` : (n.className ? `.${n.className.replace(/^\s+|\s+$/g, "").replace(/\s+/g, ".")}` : `${n.tagName}`))
             if (target.includes('#dialog-panel')) {
                 return
             }
@@ -124,20 +160,14 @@ class Sharingan extends React.Component {
                 }
             }
         }, 50, { 'trailing': true });
-        // window.onkeydown = (e) => {
-        //     console.log(e.key)
-        // }
-        // window.onkeyup = (e) => {
-        //     console.log(e.key)
-        // }
     }
 
-    runSharingan(i) {
+    executeSharingan(i, executeRecord) {
         this.stopSharingan()
         i = i ? i : 0
-        if (actionRecord.length === 0) return;
+        if (executeRecord.length === 0) return;
 
-        let targetRecord = actionRecord[i]
+        let targetRecord = executeRecord[i]
         let targetEle = targetRecord.target.length > 0 ? document.querySelector(targetRecord.target.join(' ')).parentNode.children[targetRecord.index] : document.querySelector(this.props.defaultTarget)
 
         switch (targetRecord.type) {
@@ -154,17 +184,23 @@ class Sharingan extends React.Component {
                 this.fireMouseEvent('mouseup', targetEle, targetRecord.position.x, targetRecord.position.Y)
                 break;
         }
-        if (actionRecord[i + 1]) {
+        if (executeRecord[i + 1]) {
             this.timeCircle = setTimeout(() => this.runSharingan(i + 1), targetRecord.during)
         }
-
         this.setState({
             dialogInfo: {
-                // step: i + 1,
                 x: targetRecord.position.x,
                 y: targetRecord.position.y
             }
         })
+    }
+
+    runSharingan(index) {
+        if (this.state.listSharingan[index]) {
+            this.executeSharingan(0, this.state.listSharingan[index])
+        } else {
+            console.warn(index + 'record is not exist')
+        }
     }
 
     taskList() {
@@ -178,11 +214,15 @@ class Sharingan extends React.Component {
     };
 
     render() {
-        const { step, dialogInfo } = this.state
+        const { step, dialogInfo, listSharingan } = this.state
         return (
             < DialogPanel
+                listSharingan={listSharingan || []}
+                saveSharingan={() => this.saveSharingan()}
+                clearSharingan={() => this.clearSharingan()}
                 startSharingan={() => this.startSharingan()}
-                runSharingan={() => this.runSharingan()}
+                pauseSharingan={() => this.pauseSharingan()}
+                runSharingan={(index) => this.runSharingan(null, index)}
                 dialogInfo={dialogInfo}
                 step={step}
             />

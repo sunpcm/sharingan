@@ -5,7 +5,7 @@ class DialogPanel extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            recordStatus: ''
+            recordStatus: 'pause'
         }
     }
 
@@ -16,6 +16,16 @@ class DialogPanel extends Component {
     }
 
     componentDidMount() {
+        document.querySelector("#dialog-panel-handle .record-list").addEventListener("click", (e) => {
+            // e.target is the clicked element!
+            // If it was a list item
+            if (e.target && e.target.className == "icon-edit") {
+                // e.target.parentNode.parentNode.id
+            }
+            if (e.target && e.target.className == "icon-run") {
+                this.runSharingan(e.target.parentNode.parentNode.id)
+            }
+        });
         this.Dragging(this.getDraggingDialog).enable();
     }
 
@@ -23,18 +33,45 @@ class DialogPanel extends Component {
         this.Dragging(this.getDraggingDialog).disable();
     }
 
-    startSharingan() {
-        this.props.startSharingan()
-        this.setState({
-            recordStatus: 'record'
-        })
+
+
+    handleSharingan() {
+        if (this.state.recordStatus == 'record') {
+            this.props.pauseSharingan()
+            this.setState({
+                recordStatus: 'pause'
+            })
+        } else {
+            this.props.startSharingan()
+            this.setState({
+                recordStatus: 'record'
+            })
+        }
+    }
+    clearSharingan() {
+        this.props.clearSharingan()
+    }
+    saveSharingan() {
+        this.props.saveSharingan()
     }
 
-    runSharingan() {
-        this.props.runSharingan()
+    runSharingan(index) {
+        this.props.runSharingan(index)
         this.setState({
             recordStatus: 'run'
         })
+    }
+
+    formateDate(data) {
+        let month = new Date(data).getMonth() * 1 + 1;
+        month = month > 10 ? month : '0' + month
+        let date = new Date(data).getDate() * 1;
+        date = date > 10 ? date : '0' + date
+        let hours = new Date(data).getHours() * 1;
+        hours = hours > 10 ? hours : '0' + hours
+        let minutes = new Date(data).getMinutes() * 1;
+        minutes = minutes > 10 ? minutes : '0' + minutes
+        return `${month}/${date} ${hours}:${minutes}`
     }
 
     Dragging(validateHandler) {
@@ -67,23 +104,27 @@ class DialogPanel extends Component {
             }
         };
 
+        let getDraggingTarget = () => {
+            return document.getElementById('dialog-panel-handle')
+        }
+
         return {
             enable: function () {
-                document.addEventListener('mousedown', mouseHandler);
-                document.addEventListener('mousemove', mouseHandler);
-                document.addEventListener('mouseup', mouseHandler);
+                getDraggingTarget().addEventListener('mousedown', mouseHandler);
+                getDraggingTarget().addEventListener('mousemove', mouseHandler);
+                getDraggingTarget().addEventListener('mouseup', mouseHandler);
             },
             disable: function () {
-                document.removeEventListener('mousedown', mouseHandler);
-                document.removeEventListener('mousemove', mouseHandler);
-                document.removeEventListener('mouseup', mouseHandler);
+                getDraggingTarget().removeEventListener('mousedown', mouseHandler);
+                getDraggingTarget().removeEventListener('mousemove', mouseHandler);
+                getDraggingTarget().removeEventListener('mouseup', mouseHandler);
             }
         }
     }
 
     getDraggingDialog(e) {
         let target = e.target;
-        while (target && target.className.indexOf('dialog-panel-top') === -1) {
+        while (target && target.className.indexOf('dialog-panel-bottom') === -1) {
             target = target.offsetParent;
         }
         if (target !== null) {
@@ -95,9 +136,6 @@ class DialogPanel extends Component {
 
 
     render() {
-        // this.props.dialogInfo.x / ocument.documentElement.clientHeight
-        // document.documentElement.clientWidth
-
         let panelPosition = {
             x: this.props.dialogInfo.x / document.documentElement.clientWidth > 0.5 ? '-240' : '40',
             y: this.props.dialogInfo.y / document.documentElement.clientHeight > 0.5 ? '-80' : '0'
@@ -198,37 +236,61 @@ class DialogPanel extends Component {
         //         </div>
         //     </div >
         // )
-
         return (
             <div id="dialog-panel">
-                <div id="dialog-panel-pointer" style={{ left: this.props.dialogInfo.x + 'px', top: this.props.dialogInfo.y + 'px' }}>
-                    <div className="sharingan-popover sharingan-popover-placement-top" style={{ left: panelPosition.x + 'px', top: panelPosition.y + 'px' }}>
-                        <div className="sharingan-popover-content">
-                            {/* <div className="sharingan-popover-arrow"></div> */}
-                            <div className="sharingan-popover-inner" role="tooltip">
-                                <div>
-                                    <div className="sharingan-popover-title">Title</div>
-                                    <div className="sharingan-popover-inner-content">
+                {
+                    this.state.recordStatus == 'run'
+                        ?
+                        <div id="dialog-panel-pointer" style={{ left: this.props.dialogInfo.x + 'px', top: this.props.dialogInfo.y + 'px' }}>
+                            <div className={`sharingan-popover sharingan-popover-placement-top`} style={{ left: panelPosition.x + 'px', top: panelPosition.y + 'px' }}>
+                                <div className="sharingan-popover-content">
+                                    <div className="sharingan-popover-inner" role="tooltip">
                                         <div>
-                                            Content Content Content Content Content Content Content Content
+                                            <div className="sharingan-popover-title">Title</div>
+                                            <div className="sharingan-popover-inner-content">
+                                                <div>
+                                                    Content Content Content Content Content Content Content Content
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div id="dialog-panel-btn">
+                        :
+                        null
+                }
+                <div id="dialog-panel-handle">
                     <div className="dialog-panel-top">
-                        <div className={`dialog-panel-status ${this.state.isRecord ? 'animated infinite flash slow' : 'gray-pointer'}`}></div>
-                        <div className="dialog-panel-steps">{this.props.step}</div>
+                        <ul className="record-list">
+                            {
+                                this.props.listSharingan.map((n, i) => {
+                                    return (
+                                        <li className="record-item" key={i} id={i}>
+                                            <span className="record-date">{this.formateDate(n.time)}</span>
+                                            <span className="record-date">{n.list.length} steps</span>
+                                            <span className="icon-group">
+                                                <span className="icon-edit">edit</span><span className="icon-run">run</span>
+                                            </span>
+                                        </li>
+                                    )
+                                })
+                            }
+
+                            {/* <li className="record-item" key="2" name="2"><span className="record-date">01-01 12:00</span><span className="record-date">12 steps</span> <span className="icon-group"><span className="icon-edit">edit</span><span className="icon-edit">run</span></span></li>
+                            <li className="record-item" key="3" name="3"><span className="record-date">01-01 12:00</span><span className="record-date">12 steps</span> <span className="icon-group"><span className="icon-edit">edit</span><span className="icon-edit">run</span></span></li>
+                            <li className="record-item" key="4" name="4"><span className="record-date">01-01 12:00</span><span className="record-date">12 steps</span> <span className="icon-group"><span className="icon-edit">edit</span><span className="icon-edit">run</span></span></li>
+                            <li className="record-item" key="5" name="5"><span className="record-date">01-01 12:00</span><span className="record-date">12 steps</span> <span className="icon-group"><span className="icon-edit">edit</span><span className="icon-edit">run</span></span></li>
+                            <li className="record-item" key="6" name="6"><span className="record-date">01-01 12:00</span><span className="record-date">12 steps</span> <span className="icon-group"><span className="icon-edit">edit</span><span className="icon-edit">run</span></span></li> */}
+                        </ul>
                     </div>
                     <div className="dialog-panel-bottom">
-                        <div className="start-sharingan" onClick={() => this.startSharingan()}>start</div>
-                        <div className="run-sharingan" onClick={() => this.runSharingan()}>run</div>
+                        <div className="clear-btn dialog-btn" onClick={() => this.clearSharingan()}>Clear</div>
+                        <div className="status-btn dialog-btn" onClick={() => this.handleSharingan()} > <div className={`point-status ${this.state.recordStatus == 'record' ? 'animated infinite flash slow' : 'gray-pointer'}`}></div></div>
+                        <div className="save-btn dialog-btn" onClick={() => this.saveSharingan()}>Save</div>
                     </div>
                 </div>
-            </div>
+            </div >
         )
     }
 }

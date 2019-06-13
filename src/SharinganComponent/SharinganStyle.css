@@ -1,3 +1,7 @@
+ul {
+  list-style: none;
+}
+
 #dialog-panel {
   pointer-events: none;
   position: absolute;
@@ -16,84 +20,80 @@
   background-size: 100%;
 }
 
-#dialog-panel #dialog-panel-btn {
+#dialog-panel #dialog-panel-handle {
   position: absolute;
   top: 200px;
-  left: 500px;
+  left: 200px;
   pointer-events: auto;
-  width: 120px;
+  width: 320px;
   z-index: 999999;
-  /* height: 100px; */
+  /* border: 1px solid red; */
 }
 
-#dialog-panel #dialog-panel-btn .dialog-panel-top {
+#dialog-panel #dialog-panel-handle .dialog-panel-top {
+  border-left: #e8e8e8 solid 1px;
+  border-right: #e8e8e8 solid 1px;
+  border-top: #e8e8e8 solid 1px;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
-  background-color: #e8e8e8;
-  height: 44px;
-  border-bottom: 1px solid #ddd;
+  height: 100%;
+}
+
+#dialog-panel #dialog-panel-handle .dialog-panel-top .record-list {
+  /* background-color: antiquewhite; */
+  padding: 6px 8px;
+  margin: 0;
+  /* padding-top: 4px; */
+}
+
+#dialog-panel #dialog-panel-handle .dialog-panel-top .record-item {
+  padding: 12px 6px;
+  border-bottom: rgba(0, 0, 0, 0.07) solid 1px;
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
-  /* column-content:center */
-  align-items: center;
-  cursor: move;
-
+  justify-content: space-between;
 }
+/* #dialog-panel #dialog-panel-handle .dialog-panel-top .record-item{} */
 
-#dialog-panel #dialog-panel-btn .dialog-panel-top .dialog-panel-status {
-  background-color: red;
-  height: 20px;
-  width: 20px;
-  border-radius: 10px;
-}
-
-#dialog-panel #dialog-panel-btn .dialog-panel-top .dialog-panel-status.gray-pointer {
-  background-color: gray;
-}
-
-/* #dialog-panel #dialog-panel-btn .dialog-panel-top .dialog-panel-steps {
-
-} */
-
-#dialog-panel #dialog-panel-btn .dialog-panel-bottom {
-  height: 34px;
+#dialog-panel #dialog-panel-handle .dialog-panel-bottom {
+  /* border: 1px blue solid; */
   display: flex;
-  flex-direction: row;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-#dialog-panel #dialog-panel-btn .dialog-panel-bottom .start-sharingan {
-  border-right: 1px solid #ddd;
-}
-
-#dialog-panel #dialog-panel-btn .dialog-panel-bottom .start-sharingan,
-#dialog-panel #dialog-panel-btn .dialog-panel-bottom .run-sharingan {
-  width: 60px;
-  padding: 4px 6px;
-  line-height: 28px;
-  text-align: center;
-  cursor: pointer;
-}
-
-#dialog-panel #dialog-panel-btn .dialog-panel-bottom .start-sharingan {
+  border: #e8e8e8 solid 1px;
   border-bottom-left-radius: 4px;
-  background-color: #e8e8e8;
-}
-
-#dialog-panel #dialog-panel-btn .dialog-panel-bottom .run-sharingan {
   border-bottom-right-radius: 4px;
   background-color: #e8e8e8;
 }
 
-
-#dialog-panel #dialog-panel-btn .start-sharingan:hover,
-#dialog-panel #dialog-panel-btn .run-sharingan:hover {
-  background: #eee
+#dialog-panel #dialog-panel-handle .dialog-panel-bottom .dialog-btn {
+  width: 100%;
+  /* border: red solid 1px; */
+  text-align: center;
+  cursor: pointer;
+  height: 36px;
+  line-height: 36px;
 }
+
+#dialog-panel #dialog-panel-handle .dialog-panel-bottom .status-btn {
+  border-left: rgba(0, 0, 0, 0.2) solid 1px;
+  border-right: rgba(0, 0, 0, 0.2) solid 1px;
+}
+
+#dialog-panel #dialog-panel-handle .dialog-panel-bottom .status-btn .point-status {
+  height: 20px;
+  width: 20px;
+  border-radius: 10px;
+  background-color: red;
+  margin: 8px auto;
+}
+#dialog-panel #dialog-panel-handle .dialog-panel-bottom .status-btn .point-status.gray-pointer {
+  border-radius: 6px;
+}
+
+#dialog-panel #dialog-panel-handle .dialog-panel-bottom .dialog-btn:hover {
+  background-color: #ddd;
+}
+
+
 
 #dialog-panel .sharingan-popover {
   -webkit-box-sizing: border-box;
@@ -178,4 +178,4 @@
   box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.07);
 }
 
-#dialog-table{}
+#dialog-table {}
