@@ -10,20 +10,25 @@ class DialogPanel extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.status !== nextProps.status) {
-            this.taskRun()
+        if (nextProps.finishedRun) {
+            setTimeout(() => {
+                this.setState({
+                    recordStatus: 'pause'
+                })
+            }, 2000)
         }
     }
 
     componentDidMount() {
         document.querySelector("#dialog-panel-handle .record-list").addEventListener("click", (e) => {
-            // e.target is the clicked element!
-            // If it was a list item
-            if (e.target && e.target.className == "icon-edit") {
+            if (e.target && e.target.className.split(' ').indexOf("icon-edit") > -1) {
                 // e.target.parentNode.parentNode.id
             }
-            if (e.target && e.target.className == "icon-run") {
+            if (e.target && e.target.className.split(' ').indexOf("icon-run") > -1) {
                 this.runRecordReplay(e.target.parentNode.parentNode.id)
+            }
+            if (e.target && e.target.className.split(' ').indexOf("icon-delete") > -1) {
+                this.props.deleteRecordReplay(e.target.parentNode.parentNode.id)
             }
         });
         this.Dragging(this.getDraggingDialog).enable();
@@ -48,6 +53,9 @@ class DialogPanel extends Component {
             })
         }
     }
+    // deleteRecordReplay(index){
+    //     this.props.deleteRecordReplay(index)
+    // }
     clearRecordReplay() {
         this.props.clearRecordReplay()
     }
@@ -124,7 +132,7 @@ class DialogPanel extends Component {
 
     getDraggingDialog(e) {
         let target = e.target;
-        while (target && target.className.indexOf('dialog-panel-bottom') === -1) {
+        while (target && target.className.indexOf('dialog-panel-handle') === -1) {
             target = target.offsetParent;
         }
         if (target !== null) {
@@ -140,102 +148,6 @@ class DialogPanel extends Component {
             x: this.props.dialogInfo.x / document.documentElement.clientWidth > 0.5 ? '-240' : '40',
             y: this.props.dialogInfo.y / document.documentElement.clientHeight > 0.5 ? '-80' : '0'
         }
-
-        // return (
-        //     <div id="dialog-table">
-        //         <div id="accordion">
-        //             <div className="card">
-        //                 <div className="card-header" id="headingOne">
-        //                     <h5 className="mb-0">
-        //                         <button className="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-        //                             Collapsible Group Item #1
-        //                         </button>
-        //                     </h5>
-        //                 </div>
-        //                 <div id="collapseOne" className="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
-        //                     <div className="card-body">
-        //                         <div className="form-group row">
-        //                             <label htmlFor="inputTitle" className="col-sm-2 col-form-label">Title</label>
-        //                             <div className="col-sm-10">
-        //                                 <input type="password" className="form-control" id="inputTitle" placeholder="Input the Step's Name" />
-        //                             </div>
-        //                         </div>
-        //                         <div className="form-group row">
-        //                             <label htmlFor="inputPosition" className="col-sm-2 col-form-label">Position</label>
-        //                             <div className="col-sm-10 form-row align-items-center">
-        //                                 <div className="col-auto">
-        //                                     <label className="sr-only" htmlFor="inlineFormInputGroup">Username</label>
-        //                                     <div className="input-group mb-2">
-        //                                         <div className="input-group-prepend">
-        //                                             <div className="input-group-text">X</div>
-        //                                         </div>
-        //                                         <input type="text" className="form-control" id="inlineFormInputGroup" placeholder="Position X" />
-        //                                     </div>
-        //                                 </div>
-        //                                 <div className="col-auto">
-        //                                     <label className="sr-only" htmlFor="inlineFormInputGroup">Username</label>
-        //                                     <div className="input-group mb-2">
-        //                                         <div className="input-group-prepend">
-        //                                             <div className="input-group-text">Y</div>
-        //                                         </div>
-        //                                         <input type="text" className="form-control" id="inlineFormInputGroup" placeholder="Position Y" />
-        //                                     </div>
-        //                                 </div>
-        //                             </div>
-
-
-        //                             {/* </div> */}
-        //                         </div>
-
-
-
-
-        //                         {/* <div className="form-group row">
-        //                             <label htmlFor="inputTitle" className="col-sm-2 col-form-label">Title</label>
-        //                             <div className="col-sm-10">
-        //                                 <input type="password" className="form-control" id="inputTitle" placeholder="Input the Step's Name" />
-        //                             </div>
-        //                         </div>
-        //                         <div className="form-group row">
-        //                             <label htmlFor="staticEmail" className="col-sm-2 col-form-label">Type</label>
-        //                             <div className="col-sm-10">
-        //                                 <input type="text" readonly className="form-control-plaintext" value="email@example.com" />
-        //                             </div>
-        //                         </div> */}
-        //                     </div>
-        //                 </div>
-        //             </div>
-        //             <div className="card">
-        //                 <div className="card-header" id="headingTwo">
-        //                     <h5 className="mb-0">
-        //                         <button className="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-        //                             Collapsible Group Item #2
-        //                         </button>
-        //                     </h5>
-        //                 </div>
-        //                 <div id="collapseTwo" className="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
-        //                     <div className="card-body">
-        //                         Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-        //                     </div>
-        //                 </div>
-        //             </div>
-        //             <div className="card">
-        //                 <div className="card-header" id="headingThree">
-        //                     <h5 className="mb-0">
-        //                         <button className="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-        //                             Collapsible Group Item #3
-        //                         </button>
-        //                     </h5>
-        //                 </div>
-        //                 <div id="collapseThree" className="collapse" aria-labelledby="headingThree" data-parent="#accordion">
-        //                     <div className="card-body">
-        //                         Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-        //                     </div>
-        //                 </div>
-        //             </div>
-        //         </div>
-        //     </div >
-        // )
         return (
             <div id="dialog-panel">
                 {
@@ -260,29 +172,36 @@ class DialogPanel extends Component {
                         :
                         null
                 }
-                <div id="dialog-panel-handle">
+                <div id="dialog-panel-handle" className={`dialog-panel-handle ${this.props.finishedRun ? '' : 'd-none'}`}>
                     <div className="dialog-panel-top">
-                        <ul className="record-list">
-                            {
-                                this.props.listRecordReplay.map((n, i) => {
-                                    return (
-                                        <li className="record-item" key={i} id={i}>
-                                            <span className="record-date">{this.formateDate(n.time)}</span>
-                                            <span className="record-date">{n.list.length} steps</span>
-                                            <span className="icon-group">
-                                                <span className="icon-edit">edit</span><span className="icon-run">run</span>
-                                            </span>
-                                        </li>
-                                    )
-                                })
-                            }
-
-                            {/* <li className="record-item" key="2" name="2"><span className="record-date">01-01 12:00</span><span className="record-date">12 steps</span> <span className="icon-group"><span className="icon-edit">edit</span><span className="icon-edit">run</span></span></li>
-                            <li className="record-item" key="3" name="3"><span className="record-date">01-01 12:00</span><span className="record-date">12 steps</span> <span className="icon-group"><span className="icon-edit">edit</span><span className="icon-edit">run</span></span></li>
-                            <li className="record-item" key="4" name="4"><span className="record-date">01-01 12:00</span><span className="record-date">12 steps</span> <span className="icon-group"><span className="icon-edit">edit</span><span className="icon-edit">run</span></span></li>
-                            <li className="record-item" key="5" name="5"><span className="record-date">01-01 12:00</span><span className="record-date">12 steps</span> <span className="icon-group"><span className="icon-edit">edit</span><span className="icon-edit">run</span></span></li>
-                            <li className="record-item" key="6" name="6"><span className="record-date">01-01 12:00</span><span className="record-date">12 steps</span> <span className="icon-group"><span className="icon-edit">edit</span><span className="icon-edit">run</span></span></li> */}
-                        </ul>
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Step</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="record-list">
+                                {
+                                    this.props.listRecordReplay.map((n, i) => {
+                                        return (
+                                            <tr className="record-item" key={i} id={i}>
+                                                <th scope="row">{i + 1}</th>
+                                                <td className="record-date">{this.formateDate(n.time)}</td>
+                                                <td className="record-date">{n.list.length} steps</td>
+                                                <td className="icon-group">
+                                                    <i className="icon-item icon-edit fa fa-edit"></i>
+                                                    <i className="icon-item icon-run fa fa-play"></i>
+                                                    <i className="icon-item icon-delete fa fa-close"></i>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })
+                                }
+                            </tbody>
+                        </table>
                     </div>
                     <div className="dialog-panel-bottom">
                         <div className="clear-btn dialog-btn" onClick={() => this.clearRecordReplay()}>Clear</div>

@@ -37,23 +37,24 @@ ul {
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
   height: 100%;
+  background-color: #ddd;
 }
 
 #dialog-panel #dialog-panel-handle .dialog-panel-top .record-list {
-  /* background-color: antiquewhite; */
   padding: 6px 8px;
   margin: 0;
-  /* padding-top: 4px; */
 }
 
-#dialog-panel #dialog-panel-handle .dialog-panel-top .record-item {
-  padding: 12px 6px;
-  border-bottom: rgba(0, 0, 0, 0.07) solid 1px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+
+#dialog-panel #dialog-panel-handle .dialog-panel-top .record-item .icon-group .icon-item {
+  margin-left: 6px;
+  cursor: pointer;
 }
-/* #dialog-panel #dialog-panel-handle .dialog-panel-top .record-item{} */
+
+#dialog-panel #dialog-panel-handle .dialog-panel-top .record-item .icon-group .icon-item:hover {
+  color: #000
+}
+
 
 #dialog-panel #dialog-panel-handle .dialog-panel-bottom {
   /* border: 1px blue solid; */
@@ -85,6 +86,7 @@ ul {
   background-color: red;
   margin: 8px auto;
 }
+
 #dialog-panel #dialog-panel-handle .dialog-panel-bottom .status-btn .point-status.gray-pointer {
   border-radius: 6px;
 }

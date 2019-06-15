@@ -10,7 +10,8 @@ class RecordReplay extends React.Component {
         this.isDown = false;
         this.state = {
             step: 0,
-            dialogInfo: {}
+            dialogInfo: {},
+            finishedRun: true
         }
     }
     componentWillUnmount() {
@@ -30,29 +31,32 @@ class RecordReplay extends React.Component {
         return { x: x, y: y }
     }
 
-    saveRecordReplay() {
-        if (actionRecord.length == 0) return
-        try {
-            let actionStore = localStorage.getItem('actionStore')
-            // {[actionRecord[actionRecord.length - 1].startTime]:actionRecord}
-            if (!actionStore) {
-                actionStore = '[]'
-            }
-            actionStore = JSON.parse(actionStore)
-            actionStore.push({
-                time: actionRecord[actionRecord.length - 1].startTime,
-                name: '',
-                list: actionRecord,
-                id: new Date().getTime()
-            })
-            localStorage.setItem('actionStore', JSON.stringify(actionStore));
-            this.getRecordReplay()
-            actionRecord = []
-        } catch (oException) {
-            if (oException.name == 'QuotaExceededError') {
-                console.log('The local storage limit has been exceeded!');
+    saveRecordReplay(listRecordReplay) {
+        if (listRecordReplay) {
+            localStorage.setItem('actionStore', JSON.stringify(listRecordReplay));
+        } else {
+            if (actionRecord.length == 0) return
+            try {
+                let actionStore = localStorage.getItem('actionStore')
+                if (!actionStore) {
+                    actionStore = '[]'
+                }
+                actionStore = JSON.parse(actionStore)
+                actionStore.push({
+                    time: actionRecord[actionRecord.length - 1].startTime,
+                    name: '',
+                    list: actionRecord,
+                    id: new Date().getTime()
+                })
+                localStorage.setItem('actionStore', JSON.stringify(actionStore));
+                actionRecord = []
+            } catch (oException) {
+                if (oException.name == 'QuotaExceededError') {
+                    console.log('The local storage limit has been exceeded!');
+                }
             }
         }
+        this.getRecordReplay()
     }
     getRecordReplay() {
         this.setState({
@@ -163,6 +167,7 @@ class RecordReplay extends React.Component {
     }
 
     executeRecordReplay(i, executeRecord) {
+        let isFinish = false
         this.pauseRecordReplay()
         i = i ? i : 0
         if (executeRecord.length === 0) return;
@@ -186,12 +191,18 @@ class RecordReplay extends React.Component {
         }
         if (executeRecord.list[i + 1]) {
             this.timeCircle = setTimeout(() => this.executeRecordReplay(i + 1, executeRecord), targetRecord.during)
+        } else {
+            isFinish = true
         }
+
+
+
         this.setState({
             dialogInfo: {
                 x: targetRecord.position.x,
-                y: targetRecord.position.y
-            }
+                y: targetRecord.position.y,
+            },
+            finishedRun: isFinish
         })
     }
 
@@ -201,6 +212,15 @@ class RecordReplay extends React.Component {
         } else {
             console.warn(index + 'record is not exist')
         }
+    }
+
+    deleteRecordReplay(index) {
+
+        console.log(index)
+
+        let { listRecordReplay } = this.state
+        listRecordReplay.splice(index, 1)
+        this.saveRecordReplay(listRecordReplay)
     }
 
     taskList() {
@@ -214,17 +234,19 @@ class RecordReplay extends React.Component {
     };
 
     render() {
-        const { step, dialogInfo, listRecordReplay } = this.state
+        const { step, dialogInfo, listRecordReplay, finishedRun } = this.state
         return (
-            < DialogPanel
+            <DialogPanel
                 listRecordReplay={listRecordReplay || []}
                 saveRecordReplay={() => this.saveRecordReplay()}
                 clearRecordReplay={() => this.clearRecordReplay()}
                 startRecordReplay={() => this.startRecordReplay()}
                 pauseRecordReplay={() => this.pauseRecordReplay()}
                 runRecordReplay={(index) => this.runRecordReplay(index)}
+                deleteRecordReplay={(index) => this.deleteRecordReplay(index)}
                 dialogInfo={dialogInfo}
                 step={step}
+                finishedRun={finishedRun}
             />
         )
     }
