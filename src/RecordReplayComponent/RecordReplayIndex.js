@@ -89,6 +89,8 @@ class RecordReplay extends React.Component {
                     startTime: dataTime,
                     target: [],
                     index: 0,
+                    title: '',
+                    message: '',
                     position: { y: this.getPosition(e).y, x: this.getPosition(e).x },
                     type: 'click'
                 })
@@ -98,6 +100,8 @@ class RecordReplay extends React.Component {
                     startTime: dataTime,
                     target: target,
                     index: index,
+                    title: '',
+                    message: '',
                     position: { y: this.getPosition(e).y, x: this.getPosition(e).x },
                     type: 'click'
                 })
@@ -201,6 +205,8 @@ class RecordReplay extends React.Component {
             dialogInfo: {
                 x: targetRecord.position.x,
                 y: targetRecord.position.y,
+                title: targetRecord.title,
+                message: targetRecord.message
             },
             finishedRun: isFinish
         })
@@ -215,9 +221,6 @@ class RecordReplay extends React.Component {
     }
 
     deleteRecordReplay(index) {
-
-        console.log(index)
-
         let { listRecordReplay } = this.state
         listRecordReplay.splice(index, 1)
         this.saveRecordReplay(listRecordReplay)
@@ -238,7 +241,7 @@ class RecordReplay extends React.Component {
         return (
             <DialogPanel
                 listRecordReplay={listRecordReplay || []}
-                saveRecordReplay={() => this.saveRecordReplay()}
+                saveRecordReplay={(listRecordReplay) => this.saveRecordReplay(listRecordReplay)}
                 clearRecordReplay={() => this.clearRecordReplay()}
                 startRecordReplay={() => this.startRecordReplay()}
                 pauseRecordReplay={() => this.pauseRecordReplay()}
