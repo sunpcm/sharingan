@@ -15,73 +15,45 @@ class App extends React.Component {
     //   this.RecordReplay.startRecordReplay()
     // this.RecordReplay = new RecordReplay({callback:()=>this.test()})
   }
+  startTest(event) {
+    //refer https://w3c.github.io/uievents/tools/key-event-viewer.html
+    //1. input test
+    let inputElem = document.getElementById("input");
+
+    //2.keybord event
+    // let tempKeyboardEvent = new KeyboardEvent("down", {
+    //   key: "a",
+    //   shiftKey: true
+    // });
+
+    Object.getOwnPropertyDescriptor(inputElem.__proto__, "value").set.call(
+      inputElem,
+      inputElem.value + "a"
+    );
+    // inputElem.dispatchEvent(tempKeyboardEvent);
+
+    let tempEvent = new Event("input", { bubbles: true, shiftKey: true });
+    inputElem.dispatchEvent(tempEvent);
+
+    // //3. click
+    // let clickElem = document.getElementById("click");
+
+    // //3.1  "1" keypress
+    // // let tempKeyboardEvent = new KeyboardEvent("down", {
+    // //   key: "1"
+    // // });
+    // // document.dispatchEvent(tempKeyboardEvent);
+
+    // //3.2 shift keypres
+    // let clickEevent = new MouseEvent("click", {
+    //   bubbles: true,
+    //   shiftKey: true
+    // });
+    // clickElem.dispatchEvent(clickEevent);
+  }
 
   test(e) {
     console.log(e)
-  }
-
-  taskList() {
-    // this.RecordReplay.taskRun()
-  }
-
-  test(data) {
-    console.log(data)
-  }
-
-  Dragging(validateHandler) {
-    let draggingObj = null;
-    let diffX = 0;
-    let diffY = 0;
-
-    let mouseHandler = (e) => {
-      switch (e.type) {
-        case 'mousedown':
-          draggingObj = validateHandler(e);
-          if (draggingObj != null) {
-            diffX = e.clientX - draggingObj.offsetLeft;
-            diffY = e.clientY - draggingObj.offsetTop;
-          }
-          break;
-
-        case 'mousemove':
-          if (draggingObj) {
-            draggingObj.style.left = (e.clientX - diffX) + 'px';
-            draggingObj.style.top = (e.clientY - diffY) + 'px';
-          }
-          break;
-
-        case 'mouseup':
-          draggingObj = null;
-          diffX = 0;
-          diffY = 0;
-          break;
-      }
-    };
-
-    return {
-      enable: function () {
-        document.addEventListener('mousedown', mouseHandler);
-        document.addEventListener('mousemove', mouseHandler);
-        document.addEventListener('mouseup', mouseHandler);
-      },
-      disable: function () {
-        document.removeEventListener('mousedown', mouseHandler);
-        document.removeEventListener('mousemove', mouseHandler);
-        document.removeEventListener('mouseup', mouseHandler);
-      }
-    }
-  }
-
-  getDraggingDialog(e) {
-    let target = e.target;
-    while (target && target.className.indexOf('mouse') === -1) {
-      target = target.offsetParent;
-    }
-    if (target != null) {
-      return target.offsetParent;
-    } else {
-      return null;
-    }
   }
 
 
@@ -92,10 +64,17 @@ class App extends React.Component {
         <div className="mouse m-1"></div>
         <div className="mouse m-2"></div>
         <div className="mouse m-3"></div>
+
         <div className="top-panel">
           <button className="btn test-1" onClick={() => this.test(1)}>1</button>
           <button className="btn test-1" onClick={() => this.test(2)}>2</button>
           <button className="btn test-1" onClick={() => this.test(3)}>3</button>
+        </div>
+        <div className="input-group mb-3">
+          <div className="input-group-prepend">
+            <span className="input-group-text" id="basic-addon1">@</span>
+          </div>
+          <input id="input" type="text" className="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" />
         </div>
         <div className="left-panel">
           <button className="btn test-1" onClick={() => this.test(4)}>1</button>
@@ -110,7 +89,7 @@ class App extends React.Component {
         <div className="bottom-panel">
           <button className="btn test-1" onClick={() => this.test(7)}>1</button>
           <button className="btn test-1" onClick={() => this.test(8)}>2</button>
-          <button id="task-start" className="btn test-1" onClick={() => this.taskList()}>Start</button>
+          <button id="task-start" className="btn test-1" onClick={() => this.startTest()}>Start</button>
         </div>
       </div>
     )
