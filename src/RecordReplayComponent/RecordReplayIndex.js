@@ -3,6 +3,7 @@ import DialogPanel from './DialogPanel';
 import _ from 'lodash'
 
 let actionRecord = []
+// let intervalGroup = []
 class RecordReplay extends React.Component {
 
     constructor(props) {
@@ -79,11 +80,12 @@ class RecordReplay extends React.Component {
                 let lastAction = actionRecord[actionRecord.length - 1]
                 lastAction.during = dataTime - lastAction.startTime
             }
+
             let target = e.path.reverse().slice(4).map(n => n.id ? `#${n.id}` : (n.className ? `.${n.className.replace(/^\s+|\s+$/g, "").replace(/\s+/g, ".")}` : `${n.tagName}`))
             if (target.includes('#dialog-panel')) {
                 return
             }
-            this.isMouseDown = true
+            this.isMouseDown = true;
             if (target.length === 0) {
                 actionRecord.push({
                     startTime: dataTime,
@@ -92,7 +94,8 @@ class RecordReplay extends React.Component {
                     title: '',
                     message: '',
                     position: { y: this.getPosition(e).y, x: this.getPosition(e).x },
-                    type: 'click'
+                    type: 'click',
+                    eventType: 'mouse'
                 })
             } else {
                 let index = [...document.querySelector(target.join(' ')).parentNode.children].indexOf(e.path[0])
@@ -103,7 +106,8 @@ class RecordReplay extends React.Component {
                     title: '',
                     message: '',
                     position: { y: this.getPosition(e).y, x: this.getPosition(e).x },
-                    type: 'click'
+                    type: 'click',
+                    eventType: 'mouse'
                 })
             }
 
@@ -111,6 +115,34 @@ class RecordReplay extends React.Component {
                 step: this.state.step + 1
             })
         }
+        window.onmousemove = _.throttle((e) => {
+            if (this.isMouseDown) {
+                if (actionRecord[actionRecord.length - 1] && actionRecord[actionRecord.length - 1].type === 'click') {
+                    actionRecord[actionRecord.length - 1].type = 'dragStart'
+                }
+                let dataTime = new Date().getTime()
+                if (actionRecord.length > 0) {
+                    let lastAction = actionRecord[actionRecord.length - 1]
+                    lastAction.during = dataTime - lastAction.startTime
+                }
+
+                actionRecord.push({
+                    startTime: dataTime,
+                    target: [],
+                    index: 0,
+                    position: { y: this.getPosition(e).y, x: this.getPosition(e).x },
+                    type: 'move',
+                    eventType: 'mouse'
+                })
+                this.setState({
+                    step: this.state.step + 1
+                })
+
+                if (this.props.getMouseActions) {
+                    this.props.getMouseActions(e)
+                }
+            }
+        }, 50, { 'trailing': true });
         window.onmouseup = (e) => {
             if (!this.isMouseDown) return;
             this.isMouseDown = false
@@ -134,7 +166,8 @@ class RecordReplay extends React.Component {
                         target: [],
                         index: 0,
                         position: { y: this.getPosition(e).y, x: this.getPosition(e).x },
-                        type: 'dragEnd'
+                        type: 'dragEnd',
+                        eventType: 'mouse'
                     })
                 }
                 this.setState({
@@ -142,32 +175,6 @@ class RecordReplay extends React.Component {
                 })
             }
         }
-        window.onmousemove = _.throttle((e) => {
-            if (this.isMouseDown) {
-                if (actionRecord[actionRecord.length - 1] && actionRecord[actionRecord.length - 1].type === 'click') {
-                    actionRecord[actionRecord.length - 1].type = 'dragStart'
-                }
-                let dataTime = new Date().getTime()
-                if (actionRecord.length > 0) {
-                    let lastAction = actionRecord[actionRecord.length - 1]
-                    lastAction.during = dataTime - lastAction.startTime
-                }
-                actionRecord.push({
-                    startTime: dataTime,
-                    target: [],
-                    index: 0,
-                    position: { y: this.getPosition(e).y, x: this.getPosition(e).x },
-                    type: 'move'
-                })
-                this.setState({
-                    step: this.state.step + 1
-                })
-
-                if (this.props.getMouseActions) {
-                    this.props.getMouseActions(e)
-                }
-            }
-        }, 50, { 'trailing': true });
 
         window.onkeydown = (e) => {
             let dataTime = new Date().getTime()
@@ -180,18 +187,8 @@ class RecordReplay extends React.Component {
             if (target.includes('#dialog-panel')) {
                 return
             }
-            this.isKeyDown = true
-            if (target.length === 0) {
-                // actionRecord.push({
-                //     startTime: dataTime,
-                //     target: [],
-                //     index: 0,
-                //     title: '',
-                //     message: '',
-                //     position: { y: this.getPosition(e).y, x: this.getPosition(e).x },
-                //     type: 'click'
-                // })
-            } else if (isInput) {
+            // this.isKeyDown = true
+            if (isInput) {
                 let index = [...document.querySelector(target.join(' ')).parentNode.children].indexOf(e.path[0])
                 actionRecord.push({
                     startTime: dataTime,
@@ -201,13 +198,66 @@ class RecordReplay extends React.Component {
                     title: '',
                     message: '',
                     position: { y: this.getPosition(e).y, x: this.getPosition(e).x },
-                    type: 'input'
-                })
-            }
+                    type: 'input',
+                    eventType: 'keyboard'
 
+                })
+            } else {
+                let lastKeydownIndex = _.findLastIndex(actionRecord, function (n) { return n.keyCode == e.keyCode });
+                if (lastKeydownIndex == -1 || actionRecord[lastKeydownIndex].type != 'keydown') {
+                    actionRecord.push({
+                        startTime: dataTime,
+                        target: null,
+                        index: null,
+                        value: e.key,
+                        keyCode: e.keyCode,
+                        title: '',
+                        message: '',
+                        position: null,
+                        type: 'keydown',
+                        eventType: 'keyboard'
+                    })
+                }
+            }
             this.setState({
                 step: this.state.step + 1
             })
+        }
+        window.onkeyup = (e) => {
+            // this.isKeyDown = false
+
+            let dataTime = new Date().getTime()
+
+            if (actionRecord.length > 0) {
+                let lastAction = actionRecord[actionRecord.length - 1]
+                lastAction.during = dataTime - lastAction.startTime
+            } else {
+                return
+            }
+
+            let isInput = e.path[0].tagName == 'INPUT'
+            // if (target.includes('#dialog-panel')) {
+            //     return
+            // }
+            if (isInput) {
+            } else {
+                let lastKeydownIndex = _.findLastIndex(actionRecord, function (n) { return n.keyCode == e.keyCode })
+                if (lastKeydownIndex > -1 && actionRecord[lastKeydownIndex].type == 'keydown' && dataTime - actionRecord[lastKeydownIndex].startTime > 1000) {
+                    actionRecord[lastKeydownIndex].keepTime = dataTime - actionRecord[lastKeydownIndex].startTime
+                    // actionRecord.push({
+                    //     startTime: dataTime,
+                    //     target: null,
+                    //     index: null,
+                    //     value: e.key,
+                    //     keyCode: e.keyCode,
+                    //     title: '',
+                    //     message: '',
+                    //     position: null,
+                    //     type: 'keyup',
+                    //     eventType: 'keyboard'
+                    // })
+                }
+            }
         }
     }
 
@@ -218,8 +268,7 @@ class RecordReplay extends React.Component {
         if (executeRecord.length === 0) return;
 
         let targetRecord = executeRecord.list[i]
-        let targetEle = targetRecord.target.length > 0 ? document.querySelector(targetRecord.target.join(' ')).parentNode.children[targetRecord.index] : document.querySelector(this.props.defaultTarget)
-
+        let targetEle = targetRecord.target && targetRecord.target.length > 0 ? document.querySelector(targetRecord.target.join(' ')).parentNode.children[targetRecord.index] : document.querySelector(this.props.defaultTarget)
         switch (targetRecord.type) {
             case 'click':
                 targetEle.click()
@@ -234,21 +283,24 @@ class RecordReplay extends React.Component {
                 this.fireMouseEvent('mouseup', targetEle, targetRecord.position.x, targetRecord.position.Y)
                 break;
             case 'input':
-                this.simulateKeyboardEvent(targetEle, targetRecord.value)
+                this.simulateKeyboardInputEvent(targetEle, targetRecord.value)
+                break;
+            case 'keydown':
+                this.simulateKeyboardEvent(targetRecord)
                 break;
         }
         if (executeRecord.list[i + 1]) {
-            this.timeCircle = setTimeout(() => this.executeRecordReplay(i + 1, executeRecord), targetRecord.during)
+            this.timeCircle = setTimeout(() => this.executeRecordReplay(i + 1, executeRecord), targetRecord.during);
         } else {
-            isFinish = true
+            isFinish = true;
         }
 
 
 
         this.setState({
             dialogInfo: {
-                x: targetRecord.position.x,
-                y: targetRecord.position.y,
+                x: targetRecord.position ? targetRecord.position.x : 0,
+                y: targetRecord.position ? targetRecord.position.y : 0,
                 title: targetRecord.title,
                 message: targetRecord.message
             },
@@ -280,7 +332,7 @@ class RecordReplay extends React.Component {
         elem.dispatchEvent(evt);
     };
 
-    simulateKeyboardEvent(targetEle, value) {
+    simulateKeyboardInputEvent(targetEle, value) {
         let inputElem = targetEle//document.querySelector("input");
         Object.getOwnPropertyDescriptor(inputElem.__proto__, "value").set.call(
             inputElem,
@@ -288,6 +340,17 @@ class RecordReplay extends React.Component {
         );
         let tempEvent = new Event("input", { bubbles: true, shiftKey: true });
         inputElem.dispatchEvent(tempEvent);
+    }
+    runKeyboardEvent(info) {
+        let element = document.querySelector(this.props.defaultTarget);
+        let e = new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: info.value, char: info.value, keyCode: info.keyCode, shiftKey: false });
+        element.dispatchEvent(e);
+    }
+    simulateKeyboardEvent(info) {
+        let interval = setInterval(() => { this.runKeyboardEvent(info); }, 50)
+        setTimeout(() => {
+            clearInterval(interval)
+        }, info.keepTime)
     }
 
     render() {
