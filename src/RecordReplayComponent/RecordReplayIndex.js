@@ -3,6 +3,8 @@ import DialogPanel from './DialogPanel';
 import _ from 'lodash'
 
 let actionRecord = []
+// let runKeyboardList = []
+window.actionRecord = actionRecord;
 // let intervalGroup = []
 class RecordReplay extends React.Component {
 
@@ -47,7 +49,9 @@ class RecordReplay extends React.Component {
                     time: actionRecord[actionRecord.length - 1].startTime,
                     name: '',
                     list: actionRecord,
-                    id: new Date().getTime()
+                    id: new Date().getTime(),
+                    initID: this.state.initStateID,
+                    initURL: this.state.initStateURL
                 })
                 localStorage.setItem('actionStore', JSON.stringify(actionStore));
                 actionRecord = []
@@ -74,191 +78,194 @@ class RecordReplay extends React.Component {
         window.onmousemove = null;
     }
     startRecordReplay() {
-        window.onmousedown = (e) => {
-            let dataTime = new Date().getTime()
-            if (actionRecord.length > 0) {
-                let lastAction = actionRecord[actionRecord.length - 1]
-                lastAction.during = dataTime - lastAction.startTime
-            }
 
-            let target = e.path.reverse().slice(4).map(n => n.id ? `#${n.id}` : (n.className ? `.${n.className.replace(/^\s+|\s+$/g, "").replace(/\s+/g, ".")}` : `${n.tagName}`))
-            if (target.includes('#dialog-panel')) {
-                return
-            }
-            this.isMouseDown = true;
-            if (target.length === 0) {
-                actionRecord.push({
-                    startTime: dataTime,
-                    target: [],
-                    index: 0,
-                    title: '',
-                    message: '',
-                    position: { y: this.getPosition(e).y, x: this.getPosition(e).x },
-                    type: 'click',
-                    eventType: 'mouse'
-                })
-            } else {
-                let index = [...document.querySelector(target.join(' ')).parentNode.children].indexOf(e.path[0])
-                actionRecord.push({
-                    startTime: dataTime,
-                    target: target,
-                    index: index,
-                    title: '',
-                    message: '',
-                    position: { y: this.getPosition(e).y, x: this.getPosition(e).x },
-                    type: 'click',
-                    eventType: 'mouse'
-                })
-            }
+        if (this.state.listRecordReplay.length > 2) {
+            Common.showHints("Can not more than 2 records.", Common.showTipType.success, 1800);
+            return;
+        }
+
+        this.props.initAllRecordState().then(initInfo => {
 
             this.setState({
-                step: this.state.step + 1
+                initStateID: initInfo.id,
+                initStateURL: initInfo.url
             })
-        }
-        window.onmousemove = _.throttle((e) => {
-            if (this.isMouseDown) {
-                if (actionRecord[actionRecord.length - 1] && actionRecord[actionRecord.length - 1].type === 'click') {
-                    actionRecord[actionRecord.length - 1].type = 'dragStart'
-                }
+
+            window.onmousedown = (e) => {
                 let dataTime = new Date().getTime()
                 if (actionRecord.length > 0) {
                     let lastAction = actionRecord[actionRecord.length - 1]
                     lastAction.during = dataTime - lastAction.startTime
                 }
+                let target = e.path.reverse().slice(4).map(n => n.id ? `#${n.id}` : (n.className ? `.${n.className.replace(/^\s+|\s+$/g, "").replace(/\s+/g, ".")}` : `${n.tagName}`))
 
-                actionRecord.push({
-                    startTime: dataTime,
-                    target: [],
-                    index: 0,
-                    position: { y: this.getPosition(e).y, x: this.getPosition(e).x },
-                    type: 'move',
-                    eventType: 'mouse'
-                })
+                //TODO need improve.
+                // remove codeMirrir
+                let mirrorIndex = target.indexOf('.CodeMirror.cm-s-mbo.CodeMirror-wrap.CodeMirror-focused')
+                if (mirrorIndex > -1) {
+                    target[mirrorIndex] = '.CodeMirror.cm-s-mbo.CodeMirror-wrap'
+                }
+
+                if (target.includes('#dialog-panel')) {
+                    return
+                }
+                this.isMouseDown = true;
+                if (target.length === 0) {
+                    actionRecord.push({
+                        startTime: dataTime,
+                        target: [],
+                        index: 0,
+                        title: '',
+                        message: '',
+                        position: { y: this.getPosition(e).y, x: this.getPosition(e).x },
+                        type: 'click',
+                        eventType: 'mouse'
+                    })
+                } else {
+                    let index = [...document.querySelector(target.join(' ')).parentNode.children].indexOf(e.path[0])
+                    actionRecord.push({
+                        startTime: dataTime,
+                        target: target,
+                        index: index,
+                        title: '',
+                        message: '',
+                        position: { y: this.getPosition(e).y, x: this.getPosition(e).x },
+                        type: 'click',
+                        eventType: 'mouse'
+                    })
+                }
                 this.setState({
                     step: this.state.step + 1
                 })
-
-                if (this.props.getMouseActions) {
-                    this.props.getMouseActions(e)
-                }
             }
-        }, 50, { 'trailing': true });
-        window.onmouseup = (e) => {
-            if (!this.isMouseDown) return;
-            this.isMouseDown = false
-            if (actionRecord[actionRecord.length - 1].type === 'move') {
-                let dataTime = new Date().getTime()
-                if (actionRecord.length > 0) {
-                    let lastAction = actionRecord[actionRecord.length - 1]
-                    lastAction.during = dataTime - lastAction.startTime
-                }
+            window.onmousemove = _.throttle((e) => {
+                if (this.isMouseDown) {
+                    if (actionRecord[actionRecord.length - 1] && actionRecord[actionRecord.length - 1].type === 'click') {
+                        actionRecord[actionRecord.length - 1].type = 'dragStart'
+                    }
+                    let dataTime = new Date().getTime()
+                    if (actionRecord.length > 0) {
+                        let lastAction = actionRecord[actionRecord.length - 1]
+                        lastAction.during = dataTime - lastAction.startTime
+                    }
 
-                let lastDragIndex = _.findLastIndex(actionRecord, function (n) {
-                    return n.type === 'dragStart'
-                })
-
-                if (-1 < lastDragIndex && (dataTime - actionRecord[lastDragIndex].startTime) < 1000) {
-                    actionRecord.splice(lastDragIndex + 1)
-                    actionRecord[actionRecord.length - 1].type = 'click'
-                } else {
                     actionRecord.push({
                         startTime: dataTime,
                         target: [],
                         index: 0,
                         position: { y: this.getPosition(e).y, x: this.getPosition(e).x },
-                        type: 'dragEnd',
+                        type: 'move',
                         eventType: 'mouse'
                     })
+                    this.setState({
+                        step: this.state.step + 1
+                    })
+
+                    if (this.props.getMouseActions) {
+                        this.props.getMouseActions(e)
+                    }
                 }
-                this.setState({
-                    step: actionRecord.length
-                })
-            }
-        }
+            }, 50, { 'trailing': true });
+            window.onmouseup = (e) => {
+                if (!this.isMouseDown) return;
+                this.isMouseDown = false
+                if (actionRecord[actionRecord.length - 1].type === 'move') {
+                    let dataTime = new Date().getTime()
+                    if (actionRecord.length > 0) {
+                        let lastAction = actionRecord[actionRecord.length - 1]
+                        lastAction.during = dataTime - lastAction.startTime
+                    }
 
-        window.onkeydown = (e) => {
-            let dataTime = new Date().getTime()
-            if (actionRecord.length > 0) {
-                let lastAction = actionRecord[actionRecord.length - 1]
-                lastAction.during = dataTime - lastAction.startTime
-            }
-            let target = e.path.reverse().slice(4).map(n => n.id ? `#${n.id}` : (n.className ? `.${n.className.replace(/^\s+|\s+$/g, "").replace(/\s+/g, ".")}` : `${n.tagName}`))
-            let isInput = e.path[0].tagName == 'INPUT'
-            if (target.includes('#dialog-panel')) {
-                return
-            }
-            // this.isKeyDown = true
-            if (isInput) {
-                let index = [...document.querySelector(target.join(' ')).parentNode.children].indexOf(e.path[0])
-                actionRecord.push({
-                    startTime: dataTime,
-                    target: target,
-                    index: index,
-                    value: e.key,
-                    title: '',
-                    message: '',
-                    position: { y: this.getPosition(e).y, x: this.getPosition(e).x },
-                    type: 'input',
-                    eventType: 'keyboard'
+                    let lastDragIndex = _.findLastIndex(actionRecord, function (n) {
+                        return n.type === 'dragStart'
+                    })
 
-                })
-            } else {
-                let lastKeydownIndex = _.findLastIndex(actionRecord, function (n) { return n.keyCode == e.keyCode });
-                if (lastKeydownIndex == -1 || actionRecord[lastKeydownIndex].type != 'keydown') {
-                    actionRecord.push({
-                        startTime: dataTime,
-                        target: null,
-                        index: null,
-                        value: e.key,
-                        keyCode: e.keyCode,
-                        title: '',
-                        message: '',
-                        position: null,
-                        type: 'keydown',
-                        eventType: 'keyboard'
+                    if (-1 < lastDragIndex && (dataTime - actionRecord[lastDragIndex].startTime) < 1000) {
+                        actionRecord.splice(lastDragIndex + 1)
+                        actionRecord[actionRecord.length - 1].type = 'click'
+                    } else {
+                        actionRecord.push({
+                            startTime: dataTime,
+                            target: [],
+                            index: 0,
+                            position: { y: this.getPosition(e).y, x: this.getPosition(e).x },
+                            type: 'dragEnd',
+                            eventType: 'mouse'
+                        })
+                    }
+                    this.setState({
+                        step: actionRecord.length
                     })
                 }
             }
-            this.setState({
-                step: this.state.step + 1
-            })
-        }
-        window.onkeyup = (e) => {
-            // this.isKeyDown = false
 
-            let dataTime = new Date().getTime()
+            window.onkeydown = (e) => {
+                let dataTime = new Date().getTime()
+                if (actionRecord.length > 0) {
+                    let lastAction = actionRecord[actionRecord.length - 1]
+                    lastAction.during = dataTime - lastAction.startTime
+                }
+                let target = e.path.reverse().slice(4).map(n => n.id ? `#${n.id}` : (n.className ? `.${n.className.replace(/^\s+|\s+$/g, "").replace(/\s+/g, ".")}` : `${n.tagName}`))
+                let isInput = e.path[0].tagName == 'INPUT'
+                if (target.includes('#dialog-panel')) {
+                    return
+                }
+                // this.isKeyDown = true
+                if (isInput) {
+                    let index = [...document.querySelector(target.join(' ')).parentNode.children].indexOf(e.path[0])
+                    actionRecord.push({
+                        startTime: dataTime,
+                        target: target,
+                        index: index,
+                        value: e.key,
+                        title: '',
+                        message: '',
+                        position: { y: this.getPosition(e).y, x: this.getPosition(e).x },
+                        type: 'input',
+                        eventType: 'keyboard'
 
-            if (actionRecord.length > 0) {
-                let lastAction = actionRecord[actionRecord.length - 1]
-                lastAction.during = dataTime - lastAction.startTime
-            } else {
-                return
+                    })
+                } else {
+                    let lastKeydownIndex = _.findLastIndex(actionRecord, function (n) { return n.keyCode == e.keyCode });
+                    if (lastKeydownIndex == -1 || actionRecord[lastKeydownIndex].type != 'keydown') {
+                        actionRecord.push({
+                            startTime: dataTime,
+                            target: null,
+                            index: null,
+                            value: e.key,
+                            keyCode: e.keyCode,
+                            title: '',
+                            message: '',
+                            position: null,
+                            type: 'keydown',
+                            eventType: 'keyboard'
+                        })
+                    }
+                }
+                this.setState({
+                    step: this.state.step + 1
+                })
             }
+            window.onkeyup = (e) => {
+                let dataTime = new Date().getTime()
+                if (actionRecord.length > 0) {
+                    let lastAction = actionRecord[actionRecord.length - 1]
+                    lastAction.during = dataTime - lastAction.startTime
+                } else {
+                    return
+                }
 
-            let isInput = e.path[0].tagName == 'INPUT'
-            // if (target.includes('#dialog-panel')) {
-            //     return
-            // }
-            if (isInput) {
-            } else {
-                let lastKeydownIndex = _.findLastIndex(actionRecord, function (n) { return n.keyCode == e.keyCode })
-                if (lastKeydownIndex > -1 && actionRecord[lastKeydownIndex].type == 'keydown' && dataTime - actionRecord[lastKeydownIndex].startTime > 1000) {
-                    actionRecord[lastKeydownIndex].keepTime = dataTime - actionRecord[lastKeydownIndex].startTime
-                    // actionRecord.push({
-                    //     startTime: dataTime,
-                    //     target: null,
-                    //     index: null,
-                    //     value: e.key,
-                    //     keyCode: e.keyCode,
-                    //     title: '',
-                    //     message: '',
-                    //     position: null,
-                    //     type: 'keyup',
-                    //     eventType: 'keyboard'
-                    // })
+                let isInput = e.path[0].tagName == 'INPUT'
+                if (isInput) {
+
+                } else {
+                    let lastKeydownIndex = _.findLastIndex(actionRecord, function (n) { return n.keyCode == e.keyCode })
+                    if (lastKeydownIndex > -1 && actionRecord[lastKeydownIndex].type == 'keydown' && dataTime - actionRecord[lastKeydownIndex].startTime > 1000) {
+                        actionRecord[lastKeydownIndex].keepTime = dataTime - actionRecord[lastKeydownIndex].startTime
+                    }
                 }
             }
-        }
+        })
     }
 
     executeRecordReplay(i, executeRecord) {
@@ -268,6 +275,7 @@ class RecordReplay extends React.Component {
         if (executeRecord.length === 0) return;
 
         let targetRecord = executeRecord.list[i]
+
         let targetEle = targetRecord.target && targetRecord.target.length > 0 ? document.querySelector(targetRecord.target.join(' ')).parentNode.children[targetRecord.index] : document.querySelector(this.props.defaultTarget)
         switch (targetRecord.type) {
             case 'click':
@@ -293,6 +301,9 @@ class RecordReplay extends React.Component {
             this.timeCircle = setTimeout(() => this.executeRecordReplay(i + 1, executeRecord), targetRecord.during);
         } else {
             isFinish = true;
+            // this.fireMouseEvent('mouseup', document.querySelector(this.props.defaultTarget), 0, 0)
+            window.removeEventListener('mousemove', this.stopMouseMove, true)
+            this.runKeyboardEvent({ value: ' ', code: 32 }, {}, 'keyup');//init the keyboard event.
         }
 
 
@@ -308,9 +319,18 @@ class RecordReplay extends React.Component {
         })
     }
 
+    stopMouseMove(e) {
+        if (e.isTrusted) {
+            e.stopPropagation()
+        }
+    }
+
     runRecordReplay(index) {
         if (this.state.listRecordReplay[index]) {
-            this.executeRecordReplay(0, this.state.listRecordReplay[index])
+            this.props.getInitStateByUrl(this.state.listRecordReplay[index].initURL).then(() => {
+                this.executeRecordReplay(0, this.state.listRecordReplay[index])
+                window.addEventListener('mousemove', this.stopMouseMove, true)
+            })
         } else {
             console.warn(index + 'record is not exist')
         }
@@ -318,6 +338,7 @@ class RecordReplay extends React.Component {
 
     deleteRecordReplay(index) {
         let { listRecordReplay } = this.state
+        this.props.removeInitStateByID(listRecordReplay[index].initID)
         listRecordReplay.splice(index, 1)
         this.saveRecordReplay(listRecordReplay)
     }
@@ -341,20 +362,58 @@ class RecordReplay extends React.Component {
         let tempEvent = new Event("input", { bubbles: true, shiftKey: true });
         inputElem.dispatchEvent(tempEvent);
     }
-    runKeyboardEvent(info) {
+
+    runKeyboardEvent(info, multipleType = {}, type = 'keyup') {
         let element = document.querySelector(this.props.defaultTarget);
-        let e = new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: info.value, char: info.value, keyCode: info.keyCode, shiftKey: false });
+
+        let e = new KeyboardEvent(type, {
+            bubbles: true,
+            cancelable: true,
+            key: info.value,
+            char: info.value,
+            keyCode: info.keyCode,
+            altKey: multipleType.alt,
+            ctrlKey: multipleType.control,
+            shiftKey: multipleType.shift
+        });
+
         element.dispatchEvent(e);
     }
+
     simulateKeyboardEvent(info) {
-        let interval = setInterval(() => { this.runKeyboardEvent(info); }, 50)
+        let multipleType = {
+            control: info.value == 'Control',
+            shift: info.value == 'Shift',
+            alt: info.value == 'Alt'
+        }
+        // if (-1 < runKeyboardList.findIndex(n => n.keyCode == 'Control') || info.value == 'Control') {
+        //     multipleType.control = true
+        // }
+        // if (-1 < runKeyboardList.findIndex(n => n.keyCode == 'Alt') || info.value == 'Alt') {
+        //     multipleType.alt = true
+        // }
+        // if (-1 < runKeyboardList.findIndex(n => n.keyCode == 'Shift') || info.value == 'Shift') {
+        //     multipleType.shift = true
+        // }
+
+        // TODO no need interval
+        // let interval = setInterval(() => {
+        this.runKeyboardEvent(info, multipleType, 'keydown');
+        // }, 50)
+        // runKeyboardList.push({
+        //     keyCode: info.value,
+        //     keyInterval: interval
+        // })
         setTimeout(() => {
-            clearInterval(interval)
+            // runKeyboardList.splice(runKeyboardList.indexOf(interval), 1)
+            this.runKeyboardEvent(info, multipleType, 'keyup');
+            // clearInterval(interval)
         }, info.keepTime)
     }
 
     render() {
         const { step, dialogInfo, listRecordReplay, finishedRun } = this.state
+
         return (
             <DialogPanel
                 listRecordReplay={listRecordReplay || []}
@@ -368,6 +427,9 @@ class RecordReplay extends React.Component {
                 step={step}
                 finishedRun={finishedRun}
             />
+            // <div style={{'position':'absolute','z-index':'9999999','backgroundColor':'red'}} onClick={() => this.props.initAllRecordState()}>
+            //     test
+            // </div>
         )
     }
 }

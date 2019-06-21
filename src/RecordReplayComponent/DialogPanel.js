@@ -14,7 +14,7 @@ class DialogPanel extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.finishedRun != this.props.finishedRun && nextProps.finishedRun) {
+        if (nextProps.finishedRun !== this.props.finishedRun && nextProps.finishedRun) {
             setTimeout(() => {
                 this.setState({
                     recordStatus: 'pause'
@@ -45,7 +45,7 @@ class DialogPanel extends Component {
 
 
     handleRecordReplay() {
-        if (this.state.recordStatus == 'record') {
+        if (this.state.recordStatus === 'record') {
             this.props.pauseRecordReplay()
             this.setState({
                 recordStatus: 'pause'
@@ -125,6 +125,8 @@ class DialogPanel extends Component {
                     diffX = 0;
                     diffY = 0;
                     break;
+                default:
+                    break;
             }
         };
 
@@ -160,7 +162,7 @@ class DialogPanel extends Component {
     getStepIndex(e) {
         this.setState({
             stepIndex: e.target.value,
-            middleStepRecord: this.props.listRecordReplay[this.state.editIndex].list[e.target.value]
+            middleStepRecord: this.props.listRecordReplay[this.state.editIndex].list[e.target.value - 1]
 
         })
     }
@@ -188,13 +190,13 @@ class DialogPanel extends Component {
         }
         let { showEdit, editIndex, middleStepRecord, recordStatus } = this.state
         const { listRecordReplay, finishedRun, dialogInfo } = this.props
+
         let editRecordReplay = listRecordReplay[editIndex]
-
-        middleStepRecord['during'] = middleStepRecord['during'] || ''
-        middleStepRecord['title'] = middleStepRecord['title'] || ''
-        middleStepRecord['message'] = middleStepRecord['message'] || ''
-
-        console.log(recordStatus)
+        if (middleStepRecord) {
+            middleStepRecord['during'] = middleStepRecord['during'] || ''
+            middleStepRecord['title'] = middleStepRecord['title'] || ''
+            middleStepRecord['message'] = middleStepRecord['message'] || ''
+        }
 
         return (
             <div id="dialog-panel">
@@ -250,14 +252,14 @@ class DialogPanel extends Component {
 
 
                 {
-                    recordStatus == 'run'
+                    recordStatus === 'run'
                         ?
                         <div id="dialog-panel-pointer" style={{ left: dialogInfo.x + 'px', top: dialogInfo.y + 'px' }}>
                             <div className={`sharingan-popover sharingan-popover-placement-top`} style={{ left: panelPosition.x + 'px', top: panelPosition.y + 'px' }}>
                                 <div className="sharingan-popover-content">
                                     <div className="sharingan-popover-inner" role="tooltip">
                                         {
-                                            (!dialogInfo.title && !dialogInfo.message) || (dialogInfo.title == '' && dialogInfo.message == '') ? null
+                                            (!dialogInfo.title && !dialogInfo.message) || (dialogInfo.title === '' && dialogInfo.message === '') ? null
                                                 :
                                                 <div>
                                                     <div className="sharingan-popover-title">{dialogInfo.title}</div>
@@ -297,7 +299,7 @@ class DialogPanel extends Component {
                                                 <td className="icon-group">
                                                     <i className="icon-item icon-edit fa fa-edit"></i>
                                                     <i className="icon-item icon-run fa fa-play"></i>
-                                                    <i className="icon-item icon-delete fa fa-close"></i>
+                                                    <i className="fa fa-close icon-item icon-run"></i>
                                                 </td>
                                             </tr>
                                         )
@@ -308,7 +310,7 @@ class DialogPanel extends Component {
                     </div>
                     <div className="dialog-panel-bottom">
                         <div className="clear-btn dialog-btn" onClick={() => this.clearRecordReplay()}>Clear</div>
-                        <div className="status-btn dialog-btn" onClick={() => this.handleRecordReplay()} > <div className={`point-status ${recordStatus == 'record' ? 'animated infinite flash slow' : 'gray-pointer'}`}></div></div>
+                        <div className="status-btn dialog-btn" onClick={() => this.handleRecordReplay()} > <div className={`point-status ${recordStatus === 'record' ? 'animated infinite flash slow' : 'gray-pointer'}`}></div></div>
                         <div className="save-btn dialog-btn" onClick={() => this.saveRecordReplay()}>Save</div>
                     </div>
                 </div>
